@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Bingo House — Caller & Cartelas (Amharic + Afaan Oromo Audio)</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+      body {
+        background: #0f1724;
+        color: #e6eef8;
+        font-family: sans-serif;
+        margin: 0;
+        padding: 16px;
+      }
+      h1 {
+        margin: 0 0 12px;
+        text-align: center;
+        font-size: 28px;
+        color: #fbbf24;
+      }
+      button {
+        background: #f59e0b;
+        border: none;
+        padding: 8px 14px;
+        border-radius: 8px;
+        margin: 4px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+      button.secondary {
+        background: #1f2937;
+        color: #94a3b8;
+      }
+      button.ghost {
+        background: transparent;
+        color: #94a3b8;
+        border: 1px solid #2b3443;
+      }
+      select {
+        background: #1f2937;
+        color: #fbbf24;
+        border: 1px solid #fbbf24;
+        border-radius: 8px;
+        padding: 6px 10px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      .wrap {
+        display: grid;
+        grid-template-columns: 420px 1fr;
+        gap: 16px;
+      }
+      .panel {
+        background: #0b1220;
+        padding: 12px;
+        border-radius: 12px;
+      }
+      .ball {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: #fff;
+        color: #062024;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        font-weight: bold;
+        margin: 0 auto;
+      }
+      .ball small {
+        font-size: 14px;
+        color: #222;
+      }
+      .grid75 .row {
+        display: flex;
+        gap: 4px;
+        margin: 2px 0;
+        align-items: center;
+      }
+      .rowHead {
+        width: 20px;
+        font-weight: bold;
+        color: #fbbf24;
+        font-size: 16px;
+      }
+      .num {
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        background: #1e293b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: bold;
+        color: #94a3b8;
+        transition: 0.2s;
+        user-select: none;
+      }
+      .num.called {
+        background: #f59e0b;
+        color: #062024;
+        box-shadow: 0 0 6px #fbbf24;
+      }
+      .cartelaBtn {
+        background: #1e293b;
+        color: #f59e0b;
+        padding: 6px 12px;
+        margin: 4px;
+        border-radius: 8px;
+        cursor: pointer;
+        display: inline-block;
+        font-weight: bold;
+        border: 1px solid #f59e0b;
+      }
+      .cartelaBtn:hover {
+        background: #f59e0b;
+        color: #062024;
+      }
+      .cards {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .card {
+        background: #08162a;
+        border: 1px solid #333;
+        border-radius: 10px;
+        padding: 10px;
+        width: 190px;
+      }
+      .card .title {
+        font-weight: bold;
+        margin-bottom: 6px;
+        color: #fbbf24;
+      }
+      .cardGridHeader {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 4px;
+        margin-bottom: 4px;
+      }
+      .headerCell {
+        text-align: center;
+        font-weight: bold;
+        color: #f59e0b;
+      }
+      .cardGrid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 4px;
+      }
+      .cell {
+        background: #071526;
+        padding: 6px;
+        border-radius: 4px;
+        text-align: center;
+        font-weight: bold;
+      }
+      .cell.free {
+        color: #94a3b8;
+      }
+      .cell.marked {
+        background: #10b981;
+        color: #04221a;
+      }
+      #audioHint {
+        text-align: center;
+        color: #94a3b8;
+        font-size: 13px;
+        margin-top: 8px;
+      }
+      .langSelectBox {
+        text-align: left;
+        margin-top: 10px;
+        padding-left: 10px;
+      }
+      /* Info Box (detailed) */
+      .infoBox {
+        background: #081624;
+        padding: 10px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.03);
+      }
+      .infoRow {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+      }
+      .statusTag {
+        padding: 4px 8px;
+        border-radius: 8px;
+        font-weight: bold;
+      }
+      @media (max-width: 900px) {
+        .wrap {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Bingo House — Caller & Cartelas 🎵</h1>
+
+    <div class="wrap">
+      <!-- CALLER PANEL -->
+      <section class="panel">
+        <div class="infoBox" id="infoBox">
+          <div class="infoRow">
+            <div><b>Game ID</b></div>
+            <div id="info_gameId">—</div>
+          </div>
+          <div class="infoRow">
+            <div><b>Date</b></div>
+            <div id="info_date">—</div>
+          </div>
+          <div class="infoRow">
+            <div><b>Players</b></div>
+            <div id="info_players">—</div>
+          </div>
+          <div class="infoRow">
+            <div><b>Pot</b></div>
+            <div id="info_pot">— birr</div>
+          </div>
+          <div class="infoRow">
+            <div><b>Profit</b></div>
+            <div id="info_profit">— birr</div>
+          </div>
+          <div class="infoRow">
+            <div><b>Status</b></div>
+            <div><span id="info_status" class="statusTag">—</span></div>
+          </div>
+        </div>
+
+        <div class="ball">
+          <small id="currentLetter">–</small><span id="currentNum">–</span>
+        </div>
+        <div id="statusBar" style="text-align: center; margin: 10px 0">
+          0 numbers drawn
+        </div>
+        <div id="grid75" class="grid75"></div>
+
+        <div style="margin-top: 20px; text-align: center">
+          <button id="drawBtn">Draw</button>
+          <button id="autoBtn" class="secondary">Auto: Off</button>
+          <button id="pauseBtn" class="secondary">Pause</button>
+          <button id="resetBtn" class="secondary">Reset</button><br />
+          <button id="speedDown" class="ghost">- Speed</button>
+          <button id="speedUp" class="ghost">+ Speed</button>
+          <button id="endGameBtn" class="secondary">End Game</button>
+        </div>
+
+        <!-- Language Folder Selector Below Buttons -->
+        <div class="langSelectBox">
+          <label for="langSelect">🔊 ድምፅ ቋንቋ / Sound Language:</label><br />
+          <select id="langSelect">
+            <option value="sound">Amharic (Default)</option>
+            <option value="afaan_oromo_sound">Afaan Oromo</option>
+          </select>
+        </div>
+
+        <div id="audioHint">Click anywhere once to enable sound 🔈</div>
+      </section>
+
+      <!-- CARTELA PANEL -->
+      <section class="panel">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          "
+        >
+          <div>
+            <button id="addCardBtn" class="secondary">+ Add Cartela</button>
+            <button id="checkWinnersBtn" class="secondary">
+              Check Winners
+            </button>
+          </div>
+          <input
+            type="number"
+            id="searchInput"
+            placeholder="Search ID…"
+            style="
+              width: 120px;
+              padding: 6px;
+              border-radius: 6px;
+              border: 1px solid #444;
+              background: transparent;
+              color: #e6eef8;
+            "
+          />
+        </div>
+
+        <div id="cartelaList" style="margin-top: 8px">Loading cartelas…</div>
+        <div class="cards" id="cardsArea" style="margin-top: 12px"></div>
+      </section>
+    </div>
+
+    <script>
+      // CONFIG - edit if your API base differs
+      const API_BASE = "http://localhost:4000";
+      const token = localStorage.getItem("token");
+      const role = localStorage.getItem("userRole");
+
+      // require login token (only token & role are stored)
+      if (!token || (role !== "agent" && role !== "owner")) {
+        alert("Please login first (agent or owner).");
+        location.href = "login.html";
+        throw new Error("Not authenticated");
+      }
+
+      // get gameId from URL
+      const params = new URLSearchParams(window.location.search);
+      const GAME_ID = params.get("gameId");
+      if (!GAME_ID) {
+        alert("Missing gameId - go to Number Selector.");
+        location.href = "number_selector_updated.html";
+        throw new Error("Missing gameId");
+      }
+
+      // UI refs
+      const grid75 = document.getElementById("grid75");
+      const currentLetter = document.getElementById("currentLetter");
+      const currentNum = document.getElementById("currentNum");
+      const statusBar = document.getElementById("statusBar");
+      const info_gameId = document.getElementById("info_gameId");
+      const info_date = document.getElementById("info_date");
+      const info_players = document.getElementById("info_players");
+      const info_pot = document.getElementById("info_pot");
+      const info_profit = document.getElementById("info_profit");
+      const info_status = document.getElementById("info_status");
+      const cartelaList = document.getElementById("cartelaList");
+      const cardsArea = document.getElementById("cardsArea");
+      const langSelect = document.getElementById("langSelect");
+
+      // numbers
+      const ALL_NUMBERS = Array.from({ length: 75 }, (_, i) => i + 1);
+      let remaining = [...ALL_NUMBERS];
+      let called = []; // ordered
+      let autoTimer = null;
+      let autoRunning = false;
+      let speed = 2000; // ms
+
+      // AUDIO: try to speak intro immediately; if blocked, instruct user to click
+      let audioUnlocked = false;
+      function trySpeakIntro() {
+        // prefer speechSynthesis for "The Game is started" English phrase
+        try {
+          const utter = new SpeechSynthesisUtterance("The Game is started");
+          utter.lang = "en-US";
+          // try speak immediately
+          window.speechSynthesis.cancel();
+          window.speechSynthesis.speak(utter);
+          audioUnlocked = true;
+          document.getElementById("audioHint").textContent =
+            "✅ Audio ready — press Draw to hear sound!";
+        } catch (e) {
+          // may be blocked; user must click to enable
+          console.warn("speechSynthesis blocked or unavailable", e);
+        }
+
+        // also attempt to play optional intro audio file sound/intro_en.m4a if present
+        const audio = new Audio("sound/intro_en.m4a");
+        audio
+          .play()
+          .then(() => {
+            audioUnlocked = true;
+            document.getElementById("audioHint").textContent =
+              "✅ Audio ready — press Draw to hear sound!";
+          })
+          .catch(() => {
+            // will wait for user interaction
+          });
+      }
+
+      // attempt intro speak now
+      trySpeakIntro();
+
+      // if browser blocks, user clicks anywhere to enable audio
+      document.body.addEventListener(
+        "click",
+        () => {
+          if (!audioUnlocked) {
+            // try to unlock by playing a short silent sound
+            const unlock = new Audio();
+            unlock.play().catch(() => {});
+            audioUnlocked = true;
+            document.getElementById("audioHint").textContent =
+              "✅ Audio enabled — press Draw to hear sound!";
+            // Speak intro now that user interacted
+            trySpeakIntro();
+          }
+        },
+        { once: true }
+      );
+
+      // folder for number audio (keeps same dropdown)
+      let currentFolder = langSelect.value || "sound";
+      langSelect.addEventListener("change", (e) => {
+        currentFolder = e.target.value;
+      });
+
+      function speakNumber(letter, number) {
+        // try playing numbered audio file from chosen folder (e.g. sound/B12.m4a)
+        if (!audioUnlocked) return;
+        const file = `${currentFolder}/${letter}${number}.m4a`;
+        const a = new Audio(file);
+        a.play().catch(() => {
+          // fallback to speechSynthesis (English number + letter)
+          try {
+            const u = new SpeechSynthesisUtterance(`${letter} ${number}`);
+            u.lang = "en-US";
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(u);
+          } catch (e) {}
+        });
+      }
+
+      // grid builder
+      function buildGrid75() {
+        grid75.innerHTML = "";
+        ["B", "I", "N", "G", "O"].forEach((L, ci) => {
+          const row = document.createElement("div");
+          row.className = "row";
+          const head = document.createElement("div");
+          head.className = "rowHead";
+          head.textContent = L;
+          row.appendChild(head);
+          for (let i = 1; i <= 15; i++) {
+            const num = ci * 15 + i;
+            const el = document.createElement("div");
+            el.className = "num";
+            el.dataset.n = num;
+            el.textContent = num;
+            row.appendChild(el);
+          }
+          grid75.appendChild(row);
+        });
+      }
+      buildGrid75();
+
+      function letterFor(n) {
+        if (n <= 15) return "B";
+        if (n <= 30) return "I";
+        if (n <= 45) return "N";
+        if (n <= 60) return "G";
+        return "O";
+      }
+
+      // mark UI
+      function markNumberUI(n) {
+        const el = grid75.querySelector(`.num[data-n='${n}']`);
+        if (el) el.classList.add("called");
+      }
+
+      // sync remaining based on called array
+      function syncRemainingFromCalled() {
+        const calledSet = new Set(called);
+        remaining = ALL_NUMBERS.filter((n) => !calledSet.has(n));
+      }
+
+      // draw a number and post to backend
+      async function drawNumber() {
+        if (!remaining.length) {
+          alert("All numbers have been drawn.");
+          return;
+        }
+        const idx = Math.floor(Math.random() * remaining.length);
+        const num = remaining.splice(idx, 1)[0];
+        const L = letterFor(num);
+        currentLetter.textContent = L;
+        currentNum.textContent = num;
+        called.push(num);
+        markNumberUI(num);
+        updateCards(num);
+        statusBar.textContent = `${called.length} numbers drawn`;
+        speakNumber(L, num);
+
+        // POST called numbers (full array for idempotency)
+        try {
+          await fetch(`${API_BASE}/api/games/${GAME_ID}/called`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token,
+            },
+            body: JSON.stringify({ numbers: called }),
+          });
+        } catch (err) {
+          console.warn("Failed to save called numbers:", err);
+        }
+      }
+
+      // Pause button (Option A) - pause auto only
+      document.getElementById("pauseBtn").addEventListener("click", () => {
+        if (autoRunning) {
+          clearInterval(autoTimer);
+          autoTimer = null;
+          autoRunning = false;
+          document.getElementById("autoBtn").textContent = "Auto: Off";
+          document.getElementById("pauseBtn").textContent = "Paused";
+          setTimeout(() => {
+            document.getElementById("pauseBtn").textContent = "Pause";
+          }, 900);
+        } else {
+          // do nothing if auto isn't running
+          // small feedback:
+          document.getElementById("pauseBtn").textContent = "Pause";
+          setTimeout(() => {
+            document.getElementById("pauseBtn").textContent = "Pause";
+          }, 600);
+        }
+      });
+
+      // auto toggle
+      function toggleAuto() {
+        const btn = document.getElementById("autoBtn");
+        if (autoRunning) {
+          clearInterval(autoTimer);
+          autoTimer = null;
+          autoRunning = false;
+          btn.textContent = "Auto: Off";
+        } else {
+          autoTimer = setInterval(() => {
+            if (!remaining.length) {
+              toggleAuto();
+            } else {
+              drawNumber();
+            }
+          }, speed);
+          autoRunning = true;
+          btn.textContent = "Auto: On";
+        }
+      }
+
+      // reset
+      async function resetCaller() {
+        if (
+          !confirm(
+            "Reset all drawn numbers (this will clear called numbers both locally and on server)?"
+          )
+        )
+          return;
+        remaining = [...ALL_NUMBERS];
+        called = [];
+        currentLetter.textContent = "–";
+        currentNum.textContent = "–";
+        statusBar.textContent = "0 numbers drawn";
+        grid75
+          .querySelectorAll(".num")
+          .forEach((el) => el.classList.remove("called"));
+        // clear marks on cards too
+        document
+          .querySelectorAll(".cell.marked")
+          .forEach((c) => c.classList.remove("marked"));
+
+        try {
+          await fetch(`${API_BASE}/api/games/${GAME_ID}/called`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token,
+            },
+            body: JSON.stringify({ numbers: [] }),
+          });
+        } catch (err) {
+          console.warn("Failed to clear server called numbers", err);
+        }
+      }
+
+      // speed control
+      document.getElementById("speedUp").addEventListener("click", () => {
+        if (speed > 500) speed -= 500;
+        if (autoRunning) {
+          clearInterval(autoTimer);
+          autoTimer = setInterval(() => drawNumber(), speed);
+        }
+      });
+      document.getElementById("speedDown").addEventListener("click", () => {
+        speed += 500;
+        if (autoRunning) {
+          clearInterval(autoTimer);
+          autoTimer = setInterval(() => drawNumber(), speed);
+        }
+      });
+
+      // end game
+      async function endGame() {
+        if (!confirm("End and save this game?")) return;
+        try {
+          await fetch(`${API_BASE}/api/games/${GAME_ID}/finish`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token,
+            },
+            body: JSON.stringify({ status: "completed", numbers: called }),
+          });
+          alert("Game ended and saved.");
+          location.href = "number_selector_updated.html";
+        } catch (err) {
+          console.error("Failed to finish game", err);
+          alert("Failed to end game - check server.");
+        }
+      }
+
+      // cards rendering from backend
+      // backend should return either array of cartela IDs: ["C-1","C-2"...] or objects [{id,grid}]
+      let cartelasData = [];
+
+      function rand(min, max) {
+        const nums = Array.from({ length: max - min + 1 }, (_, i) => min + i);
+        for (let i = nums.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [nums[i], nums[j]] = [nums[j], nums[i]];
+        }
+        return nums.slice(0, 5);
+      }
+
+      function makeGridFromId(id) {
+        // simple deterministic-ish generation from id string (not cryptographically stable)
+        // but good enough if backend doesn't provide grid.
+        const seed = String(id)
+          .split("")
+          .reduce((s, ch) => s + ch.charCodeAt(0), 0);
+        let s = seed;
+        function pick(min, max) {
+          s = (s * 48271) % 2147483647;
+          const r = s % (max - min + 1);
+          return min + r;
+        }
+        const cols = [];
+        for (let c = 0; c < 5; c++) {
+          const rangeMin = 1 + c * 15;
+          const rangeMax = rangeMin + 14;
+          // pick 5 unique numbers in range
+          const pool = Array.from({ length: 15 }, (_, i) => rangeMin + i);
+          for (let k = pool.length - 1; k > 0; k--) {
+            const j = Math.floor(Math.abs(Math.sin(s + k)) * (k + 1));
+            [pool[k], pool[j]] = [pool[j], pool[k]];
+          }
+          cols.push(pool.slice(0, 5));
+        }
+        return cols;
+      }
+
+      function renderCartelas(list) {
+        cartelasData = list.map((c) => {
+          if (typeof c === "object")
+            return { id: c.id || c.Id || c.name, grid: c.grid || null };
+          return { id: String(c), grid: null };
+        });
+
+        if (!cartelasData.length) {
+          cartelaList.textContent = "No cartelas registered for this game yet.";
+          cardsArea.innerHTML = "";
+          return;
+        }
+
+        cartelaList.innerHTML = `Registered cartelas: ${cartelasData.length} — Click a cartela to view`;
+        cardsArea.innerHTML = "";
+        cartelasData.forEach((c) => {
+          const cardBtn = document.createElement("button");
+          cardBtn.className = "cartelaBtn";
+          cardBtn.textContent = c.id;
+          cardBtn.addEventListener("click", () => {
+            // toggle the card display (create if not present)
+            let existing = cardsArea.querySelector(`.card[data-id='${c.id}']`);
+            if (existing) {
+              existing.style.display =
+                existing.style.display === "none" ? "block" : "none";
+              return;
+            }
+            // build full card
+            const cols = c.grid || makeGridFromId(c.id);
+            const card = document.createElement("div");
+            card.className = "card";
+            card.dataset.id = c.id;
+            card.innerHTML = `<div class="title">Cartela ${c.id}</div>
+              <div class="cardGridHeader">
+                <div class="headerCell">B</div><div class="headerCell">I</div><div class="headerCell">N</div><div class="headerCell">G</div><div class="headerCell">O</div>
+              </div>
+              <div class="cardGrid"></div>`;
+            const grid = card.querySelector(".cardGrid");
+            for (let r = 0; r < 5; r++) {
+              for (let ci = 0; ci < 5; ci++) {
+                const val = ci === 2 && r === 2 ? "FREE" : cols[ci][r];
+                const cell = document.createElement("div");
+                cell.className = "cell";
+                if (val === "FREE") {
+                  cell.classList.add("free");
+                  cell.textContent = "★";
+                  cell.dataset.free = "1";
+                } else {
+                  cell.textContent = val;
+                  cell.dataset.n = val;
+                  if (called.includes(Number(val)))
+                    cell.classList.add("marked");
+                }
+                grid.appendChild(cell);
+              }
+            }
+            cardsArea.appendChild(card);
+          });
+          cartelaList.appendChild(cardBtn);
+        });
+      }
+
+      // update cards when number called
+      function updateCards(num) {
+        document
+          .querySelectorAll(`.cell[data-n='${num}']`)
+          .forEach((c) => c.classList.add("marked"));
+      }
+
+      // winners check basic (client-side)
+      function checkWinners() {
+        const mode = prompt(
+          "Enter winning mode (1=1 line, 2=2 lines, 3=3 lines, full=full):",
+          "1"
+        );
+        if (!mode) return;
+        let winnerFound = false;
+        document.querySelectorAll(".card").forEach((card) => {
+          card
+            .querySelectorAll(".cell")
+            .forEach((c) => c.classList.remove("winner"));
+          const cells = [...card.querySelectorAll(".cell")];
+          const grid = [];
+          for (let i = 0; i < 25; i += 5) grid.push(cells.slice(i, i + 5));
+          let lines = 0;
+          function mark(line) {
+            line.forEach((c) => c.classList.add("winner"));
+          }
+          // rows
+          grid.forEach((row) => {
+            if (
+              row.every((c) => c.classList.contains("marked") || c.dataset.free)
+            ) {
+              lines++;
+              mark(row);
+            }
+          });
+          // cols
+          for (let ci = 0; ci < 5; ci++) {
+            const col = grid.map((r) => r[ci]);
+            if (
+              col.every((c) => c.classList.contains("marked") || c.dataset.free)
+            ) {
+              lines++;
+              mark(col);
+            }
+          }
+          // diagonals
+          const diag1 = [0, 1, 2, 3, 4].map((i) => grid[i][i]);
+          if (
+            diag1.every((c) => c.classList.contains("marked") || c.dataset.free)
+          ) {
+            lines++;
+            mark(diag1);
+          }
+          const diag2 = [0, 1, 2, 3, 4].map((i) => grid[i][4 - i]);
+          if (
+            diag2.every((c) => c.classList.contains("marked") || c.dataset.free)
+          ) {
+            lines++;
+            mark(diag2);
+          }
+          const full = cells.every(
+            (c) => c.classList.contains("marked") || c.dataset.free
+          );
+          let win = false;
+          if (mode === "full" && full) win = true;
+          else if (mode !== "full" && Number(mode) <= lines) win = true;
+          if (win) {
+            winnerFound = true;
+            card.style.boxShadow = "0 0 8px rgba(245,158,11,0.6)";
+          } else {
+            card.style.boxShadow = "none";
+          }
+        });
+        if (!winnerFound) alert("No winners found for this mode.");
+      }
+
+      // load game & cartelas from server
+      async function loadGame() {
+        try {
+          // game info
+          const res = await fetch(`${API_BASE}/api/games/${GAME_ID}`, {
+            headers: { Authorization: "Bearer " + token },
+          });
+          const j = await res.json();
+          const g = j.game || j;
+          info_gameId.textContent = GAME_ID;
+          info_date.textContent =
+            g.date || g.Date || new Date().toLocaleDateString();
+          info_players.textContent = g.players ?? g.Players ?? 0;
+          info_pot.textContent = (g.pot ?? g.Pot ?? 0) + " birr";
+          info_profit.textContent = (g.profit ?? g.Profit ?? 0) + " birr";
+          const statusVal =
+            g.status ||
+            g.Status ||
+            (g.finished ? "completed" : "running") ||
+            "running";
+          info_status.textContent = statusVal.toUpperCase();
+          info_status.style.background =
+            statusVal === "completed" ? "#10b981" : "#f59e0b";
+          info_status.style.color = "#062024";
+
+          // restore called numbers if server provided them
+          if (Array.isArray(g.called) && g.called.length) {
+            called = Array.from(g.called.map(Number));
+            syncRemainingFromCalled();
+            called.forEach((n) => markNumberUI(n));
+            if (called.length) {
+              const last = called[called.length - 1];
+              currentLetter.textContent = letterFor(last);
+              currentNum.textContent = last;
+              statusBar.textContent = `${called.length} numbers drawn`;
+            }
+          }
+
+          // cartelas
+          const rc = await fetch(`${API_BASE}/api/games/${GAME_ID}/cartelas`, {
+            headers: { Authorization: "Bearer " + token },
+          });
+          const jc = await rc.json();
+          const list = jc.cartelas || jc || [];
+          renderCartelas(list);
+
+          // intro voice: always English per your choice; if audio unlocked speak immediately, else speech will occur after first click (handled above)
+          try {
+            const introUtter = new SpeechSynthesisUtterance(
+              "The Game is started"
+            );
+            introUtter.lang = "en-US";
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(introUtter);
+          } catch (e) {
+            /* ignore */
+          }
+
+          // optional audio file intro (if exists)
+          const introAudio = new Audio("sound/intro_en.m4a");
+          introAudio.play().catch(() => {
+            /* ignore if blocked */
+          });
+        } catch (err) {
+          console.error("Failed to load game or cartelas", err);
+          cartelaList.textContent = "Failed to load cartelas from server.";
+        }
+      }
+
+      // UI bindings
+      document.getElementById("drawBtn").addEventListener("click", drawNumber);
+      document.getElementById("autoBtn").addEventListener("click", toggleAuto);
+      document
+        .getElementById("resetBtn")
+        .addEventListener("click", resetCaller);
+      document.getElementById("endGameBtn").addEventListener("click", endGame);
+      document
+        .getElementById("checkWinnersBtn")
+        .addEventListener("click", checkWinners);
+
+      // Add card (local helper) - keep as a manual quick-add for caller (not saved server-side)
+      let localCardCounter = 0;
+      document.getElementById("addCardBtn").addEventListener("click", () => {
+        localCardCounter++;
+        const id = `LOCAL-${localCardCounter}`;
+        // add to cartelaList as registered style but not saved to server
+        renderCartelas([...(cartelasData || []), id]);
+      });
+
+      // start load
+      loadGame();
+    </script>
+  </body>
+</html>

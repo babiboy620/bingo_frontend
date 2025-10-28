@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Agent Dashboard — Bingo House</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #0f1724;
+        color: #e6eef8;
+        margin: 0;
+        padding: 20px;
+      }
+      h1 {
+        text-align: center;
+        color: #fbbf24;
+      }
+      select,
+      button {
+        padding: 8px 12px;
+        margin: 10px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+      }
+      button {
+        background: #f59e0b;
+        color: #111;
+        font-weight: bold;
+      }
+      button:hover {
+        opacity: 0.9;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        padding: 10px;
+        border: 1px solid #334155;
+        text-align: center;
+      }
+      th {
+        background: #1e293b;
+        color: #fbbf24;
+      }
+      tr:nth-child(even) {
+        background: #1a2233;
+      }
+      .summary {
+        margin-top: 20px;
+        padding: 15px;
+        background: #1e293b;
+        border-radius: 10px;
+      }
+      .summary div {
+        margin: 5px 0;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>🎯 Agent Dashboard</h1>
+    <button
+      onclick="localStorage.clear(); sessionStorage.clear(); location.href='admin_login.html';"
+      style="
+        background: #ef4444;
+        color: #fff;
+        border: none;
+        padding: 6px 10px;
+        border-radius: 6px;
+        float: right;
+      "
+    >
+      Logout
+    </button>
+    <div
+      style="display: flex; justify-content: space-between; align-items: center"
+    >
+      <div>
+        <label for="filterRange">Show:</label>
+        <select id="filterRange">
+          <option value="all">All Time</option>
+          <option value="today">Today</option>
+          <option value="week">This Week</option>
+        </select>
+      </div>
+      <button id="refreshBtn">🔄 Refresh</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Game ID</th>
+          <th>Date</th>
+          <th>Players</th>
+          <th>Total Pot</th>
+          <th>Winner Money</th>
+          <th>Profit</th>
+        </tr>
+      </thead>
+      <tbody id="gameTable">
+        <tr>
+          <td colspan="6">Loading...</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="summary" id="summaryBox">Loading summary...</div>
+
+    <script>
+      const API_BASE = "http://localhost:4000";
+      const token = localStorage.getItem("token");
+      const role = localStorage.getItem("userRole");
+
+      if (!token || role !== "agent") {
+        alert("Please login as agent");
+        location.href = "login_agent.html";
+      }
+
+      async function loadHistory() {
+        try {
+          const res = await fetch(API_BASE + "/api/games/my-history", {
+            headers: { Authorization: "Bearer " + token },
+          });
+          const data = await res.json();
+          if (!data.success)
+            throw new Error(data.error || "Failed to load games");
+          renderTable(data.games);
+        } catch (err) {
+          console.error(err);
+          document.getElementById("gameTable").innerHTML =
+            "<tr><td colspan='6'>Error loading history</td></tr>";
+        }
+      }
+
+      function renderTable(games) {
+        const filter = document.getElementById("filterRange").value;
+        const today = new Date();
+        const tbody = document.getElementById("gameTable");
+        tbody.innerHTML = "";
+
+        const filtered = games.filter((g) => {
+          const date = new Date(g.Date || g.date);
+          if (filter === "today") {
+            return date.toDateString() === today.toDateString();
+          } else if (filter === "week") {
+            const diff = (today - date) / (1000 * 60 * 60 * 24);
+            return diff <= 7;
+          }
+          return true; // all
+        });
+
+        let totalPot = 0,
+          totalProfit = 0,
+          totalWinner = 0,
+          totalPlayers = 0;
+
+        filtered.forEach((g) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${g.Id}</td>
+            <td>${g.Date ? new Date(g.Date).toLocaleDateString() : "—"}</td>
+            <td>${g.Players}</td>
+            <td>${g.Pot} birr</td>
+            <td>${g.WinnerMoney} birr</td>
+            <td>${g.Profit} birr</td>
+          `;
+          tbody.appendChild(tr);
+          totalPot += g.Pot;
+          totalProfit += g.Profit;
+          totalWinner += g.WinnerMoney;
+          totalPlayers += g.Players;
+        });
+
+        if (filtered.length === 0) {
+          tbody.innerHTML = "<tr><td colspan='6'>No games found.</td></tr>";
+        }
+
+        document.getElementById("summaryBox").innerHTML = `
+          <div>Total Games: ${filtered.length}</div>
+          <div>Total Players: ${totalPlayers}</div>
+          <div>Total Pot: ${totalPot} birr</div>
+          <div>Total Winner Money: ${totalWinner} birr</div>
+          <div>Total Profit: ${totalProfit} birr</div>
+        `;
+      }
+
+      document.getElementById("refreshBtn").onclick = loadHistory;
+      document.getElementById("filterRange").onchange = loadHistory;
+
+      loadHistory();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin & Owner Login — Bingo House</title>
+    <style>
+      body {
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        font-family: Arial, sans-serif;
+        color: #e6eef8;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+      .login-box {
+        background: #1e293b;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        width: 320px;
+      }
+      h1 {
+        color: #fbbf24;
+        font-size: 1.8em;
+        margin-bottom: 25px;
+      }
+      input {
+        width: 100%;
+        padding: 10px;
+        margin: 8px 0;
+        border-radius: 8px;
+        border: none;
+        text-align: center;
+      }
+      button {
+        background: #f59e0b;
+        color: #111;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        margin-top: 15px;
+        cursor: pointer;
+        width: 100%;
+      }
+      button:hover {
+        background: #fbbf24;
+      }
+      label {
+        font-size: 0.9em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-box">
+      <h1>Admin / Owner Login</h1>
+      <input type="text" id="phone" placeholder="Phone Number" /><br />
+      <input type="password" id="password" placeholder="Password" /><br />
+      <label><input type="checkbox" id="rememberMe" /> Remember Me</label><br />
+      <button onclick="loginAdmin()">Login</button>
+      <p id="msg"></p>
+    </div>
+
+    <script>
+      const API_BASE = "http://localhost:4000";
+
+      async function loginAdmin() {
+        const phone = document.getElementById("phone").value.trim();
+        const password = document.getElementById("password").value.trim();
+        const remember = document.getElementById("rememberMe").checked;
+        const msg = document.getElementById("msg");
+
+        if (!phone || !password) {
+          msg.innerText = "Please fill all fields.";
+          return;
+        }
+
+        try {
+          const res = await fetch(API_BASE + "/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ phone, password }),
+          });
+          const data = await res.json();
+          if (!data.success) {
+            msg.innerText = data.error || "Login failed";
+            return;
+          }
+
+          // ✅ Save login info
+          if (remember) {
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("userRole", data.role);
+            localStorage.setItem("userName", data.name);
+          } else {
+            sessionStorage.setItem("token", data.token);
+            sessionStorage.setItem("userRole", data.role);
+            sessionStorage.setItem("userName", data.name);
+          }
+
+          // ✅ Redirect logic
+          if (data.role === "owner") {
+            window.location.href = "owner_dashboard.html";
+          } else if (data.role === "agent") {
+            // if agent logs in here → go to agent_admin.html (the management dashboard)
+            window.location.href = "agent_admin.html";
+          } else {
+            msg.innerText = "Unknown role. Access denied.";
+          }
+        } catch (err) {
+          msg.innerText = "Network error. Please check connection.";
+        }
+      }
+
+      // Auto-login if token exists
+      window.onload = () => {
+        const token =
+          localStorage.getItem("token") || sessionStorage.getItem("token");
+        const role =
+          localStorage.getItem("userRole") ||
+          sessionStorage.getItem("userRole");
+        if (token) {
+          if (role === "owner") window.location.href = "owner_dashboard.html";
+          else if (role === "agent") window.location.href = "agent_admin.html";
+        }
+      };
+    </script>
+  </body>
+</html>
