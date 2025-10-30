@@ -124,7 +124,7 @@
     </style>
   </head>
   <button
-    onclick="localStorage.clear(); sessionStorage.clear(); location.href='agent_login.html';"
+    onclick="localStorage.clear(); sessionStorage.clear(); location.href='index.html';"
     style="
       background: #ef4444;
       color: #fff;
@@ -181,13 +181,25 @@
     </div>
 
     <script>
-      const token = localStorage.getItem("token");
-      const role = localStorage.getItem("userRole");
-      if (!token || role !== "agent") {
-        window.location.href = "login.html";
+      const API_BASE = "http://localhost:4000";
+
+      function getStorageValue(key) {
+        return localStorage.getItem(key) || sessionStorage.getItem(key);
       }
 
-      const API_BASE = "http://localhost:4000";
+      const token = getStorageValue("token");
+      const role = getStorageValue("userRole");
+
+      if (!token || role !== "agent") {
+        setTimeout(() => {
+          const tokenCheck = getStorageValue("token");
+          const roleCheck = getStorageValue("userRole");
+          if (!tokenCheck || roleCheck !== "agent") {
+            alert("Access denied — agents only!");
+            window.location.href = "agent_login.html";
+          }
+        }, 300);
+      }
 
       const numberContainer = document.getElementById("numberContainer");
       const multiplierBox = document.getElementById("multiplier");

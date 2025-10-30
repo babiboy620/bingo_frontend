@@ -65,7 +65,7 @@
   <body>
     <h1>🎯 Agent Dashboard</h1>
     <button
-      onclick="localStorage.clear(); sessionStorage.clear(); location.href='admin_login.html';"
+      onclick="localStorage.clear(); sessionStorage.clear(); location.href='index.html';"
       style="
         background: #ef4444;
         color: #fff;
@@ -113,12 +113,23 @@
 
     <script>
       const API_BASE = "http://localhost:4000";
-      const token = localStorage.getItem("token");
-      const role = localStorage.getItem("userRole");
+
+      function getStorageValue(key) {
+        return localStorage.getItem(key) || sessionStorage.getItem(key);
+      }
+
+      const token = getStorageValue("token");
+      const role = getStorageValue("userRole");
 
       if (!token || role !== "agent") {
-        alert("Please login as agent");
-        location.href = "login_agent.html";
+        setTimeout(() => {
+          const tokenCheck = getStorageValue("token");
+          const roleCheck = getStorageValue("userRole");
+          if (!tokenCheck || roleCheck !== "agent") {
+            alert("Access denied — agents only!");
+            location.href = "admin_login.html";
+          }
+        }, 300);
       }
 
       async function loadHistory() {

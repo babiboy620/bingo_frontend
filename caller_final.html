@@ -47,7 +47,7 @@
       }
       .wrap {
         display: grid;
-        grid-template-columns: 420px 1fr;
+        grid-template-columns: 620px 1fr;
         gap: 16px;
       }
       .panel {
@@ -86,16 +86,16 @@
         font-size: 16px;
       }
       .num {
-        width: 32px;
-        height: 32px;
+        width: 42px;
+        height: 38px;
         border-radius: 6px;
         background: #1e293b;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 14px;
+        font-size: 18px;
         font-weight: bold;
-        color: #94a3b8;
+        color: #eaecee;
         transition: 0.2s;
         user-select: none;
       }
@@ -222,13 +222,23 @@
             <div id="info_players">—</div>
           </div>
           <div class="infoRow">
-            <div><b>Pot</b></div>
-            <div id="info_pot">— birr</div>
+            <div>Pot</div>
+            <div id="info_pot" style="font-weight: lighter; font: size 2px">
+              — birr
+            </div>
           </div>
           <div class="infoRow">
-            <div><b>Profit</b></div>
-            <div id="info_profit">— birr</div>
+            <div>
+              <b><h2>Winner’s Money (ደራሽ)</h2></b>
+            </div>
+            <div
+              id="info_winnerMoney"
+              style="font-weight: bold; font-size: 26px; color: #ffffff"
+            >
+              — birr
+            </div>
           </div>
+
           <div class="infoRow">
             <div><b>Status</b></div>
             <div><span id="info_status" class="statusTag">—</span></div>
@@ -301,16 +311,28 @@
     </div>
 
     <script>
-      // CONFIG - edit if your API base differs
       const API_BASE = "http://localhost:4000";
-      const token = localStorage.getItem("token");
-      const role = localStorage.getItem("userRole");
 
-      // require login token (only token & role are stored)
+      function getStorageValue(key) {
+        return localStorage.getItem(key) || sessionStorage.getItem(key);
+      }
+
+      const token = getStorageValue("token");
+      const role = getStorageValue("userRole");
+
       if (!token || (role !== "agent" && role !== "owner")) {
-        alert("Please login first (agent or owner).");
-        location.href = "login.html";
-        throw new Error("Not authenticated");
+        setTimeout(() => {
+          const tokenCheck = getStorageValue("token");
+          const roleCheck = getStorageValue("userRole");
+          if (!tokenCheck || (roleCheck !== "agent" && roleCheck !== "owner")) {
+            alert("Please login first (agent or owner).");
+            if (roleCheck === "owner") {
+              window.location.href = "admin_login.html";
+            } else {
+              window.location.href = "agent_login.html";
+            }
+          }
+        }, 300);
       }
 
       // get gameId from URL
@@ -800,7 +822,9 @@
             g.date || g.Date || new Date().toLocaleDateString();
           info_players.textContent = g.players ?? g.Players ?? 0;
           info_pot.textContent = (g.pot ?? g.Pot ?? 0) + " birr";
-          info_profit.textContent = (g.profit ?? g.Profit ?? 0) + " birr";
+          info_winnerMoney.textContent =
+            (g.winnerMoney ?? g.WinnerMoney ?? 0) + " birr";
+
           const statusVal =
             g.status ||
             g.Status ||
