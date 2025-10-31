@@ -346,41 +346,41 @@
       loadGames();
     </script>
     <script>
-      // Load all games grouped by agent
-      async function loadGames() {
-        const res = await fetch(`${API_BASE}/api/games`, {
-          headers: { Authorization: "Bearer " + token },
-        });
-        const data = await res.json();
-        const games = data.games || data || [];
-        const tbody = document.querySelector("#gamesTable tbody");
-        tbody.innerHTML = "";
+async function loadGames() {
+  try {
+    const res = await fetch(`${API_BASE}/api/games`, {
+      headers: { Authorization: "Bearer " + token },
+    });
+    const data = await res.json();
+    const games = data.games || data || [];
+    const tbody = document.querySelector("#gamesTable tbody");
+    tbody.innerHTML = "";
 
-        // Group games by agent
-        const agentsMap = {};
-        games.forEach((g) => {
-          if (!agentsMap[g.AgentId]) {
-            agentsMap[g.AgentId] = {
-              totalGames: 0,
-              totalPlayers: 0,
-              totalPot: 0,
-              totalWinner: 0,
-              totalProfit: 0,
-            };
-          }
-          agentsMap[g.AgentId].totalGames++;
-          agentsMap[g.AgentId].totalPlayers += g.Players;
-          agentsMap[g.AgentId].totalPot += Number(g.Pot);
-          agentsMap[g.AgentId].totalWinner += Number(g.WinnerMoney);
-          agentsMap[g.AgentId].totalProfit += Number(g.Profit);
-        });
+    // Group games by agent
+    const agentsMap = {};
+    games.forEach((g) => {
+      if (!agentsMap[g.AgentId]) {
+        agentsMap[g.AgentId] = {
+          totalGames: 0,
+          totalPlayers: 0,
+          totalPot: 0,
+          totalWinner: 0,
+          totalProfit: 0,
+        };
+      }
+      agentsMap[g.AgentId].totalGames++;
+      agentsMap[g.AgentId].totalPlayers += g.Players;
+      agentsMap[g.AgentId].totalPot += Number(g.Pot);
+      agentsMap[g.AgentId].totalWinner += Number(g.WinnerMoney);
+      agentsMap[g.AgentId].totalProfit += Number(g.Profit);
+    });
 
-        // Render table rows per agent
-        for (const agentId in agentsMap) {
-          const a = agentsMap[agentId];
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-        <td>-</td>
+    // Render table rows per agent
+    for (const agentId in agentsMap) {
+      const a = agentsMap[agentId];
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${a.totalGames}</td>
         <td>${agentId}</td>
         <td>${a.totalPlayers}</td>
         <td>${a.totalPot} birr</td>
@@ -388,34 +388,39 @@
         <td>${a.totalProfit} birr</td>
         <td>-</td>
       `;
-          tbody.appendChild(tr);
-        }
+      tbody.appendChild(tr);
+    }
 
-        // Update summary totals
-        let totalGames = 0,
-          totalPlayers = 0,
-          totalPot = 0,
-          totalWinners = 0,
-          totalProfit = 0;
-        for (const agentId in agentsMap) {
-          const a = agentsMap[agentId];
-          totalGames += a.totalGames;
-          totalPlayers += a.totalPlayers;
-          totalPot += a.totalPot;
-          totalWinners += a.totalWinner;
-          totalProfit += a.totalProfit;
-        }
+    // Update summary totals
+    let totalGames = 0,
+      totalPlayers = 0,
+      totalPot = 0,
+      totalWinners = 0,
+      totalProfit = 0;
+    for (const agentId in agentsMap) {
+      const a = agentsMap[agentId];
+      totalGames += a.totalGames;
+      totalPlayers += a.totalPlayers;
+      totalPot += a.totalPot;
+      totalWinners += a.totalWinner;
+      totalProfit += a.totalProfit;
+    }
 
-        document.getElementById("summaryBox").innerHTML = `
+    document.getElementById("summaryBox").innerHTML = `
       <div>Total Games: ${totalGames}</div>
       <div>Total Players: ${totalPlayers}</div>
       <div>Total Pot: ${totalPot} birr</div>
       <div>Total Winner Money: ${totalWinners} birr</div>
       <div>Total Profit: ${totalProfit} birr</div>
     `;
-      }
+  } catch (err) {
+    console.error("Error loading games:", err);
+  }
+}
 
-      loadGames();
+loadGames();
+</script>
+
     </script>
   </body>
 </html>
