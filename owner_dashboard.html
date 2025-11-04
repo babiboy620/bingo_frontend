@@ -181,7 +181,7 @@
     <script>
       document.getElementById("downloadPDF").onclick = () => {
         const token = localStorage.getItem("token");
-        fetch("http://localhost:4000/api/reports/owner", {
+        fetch("https://bingo-server-ndkj.onrender.com/api/reports/owner", {
           headers: { Authorization: "Bearer " + token },
         })
           .then((res) => res.blob())
@@ -197,7 +197,7 @@
     </script>
 
     <script>
-      const API_BASE = "http://localhost:4000";
+      const API_BASE = "https://bingo-server-ndkj.onrender.com";
 
       function getStorageValue(key) {
         return localStorage.getItem(key) || sessionStorage.getItem(key);
