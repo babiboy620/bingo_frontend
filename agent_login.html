@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+like this"<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -85,23 +85,29 @@
             body: JSON.stringify({ phone, password }),
           });
           const data = await res.json();
+
           if (!data.success) {
             msg.innerText = data.error || "Login failed";
             return;
           }
 
+          // ✅ Extract role and name safely from nested 'user'
+          const role = data.user?.role;
+          const name = data.user?.name || "User";
+
           // ✅ Save login info
           if (remember) {
             localStorage.setItem("token", data.token);
-            localStorage.setItem("userRole", data.role);
-            localStorage.setItem("userName", data.name);
+            localStorage.setItem("userRole", role);
+            localStorage.setItem("userName", name);
           } else {
             sessionStorage.setItem("token", data.token);
-            sessionStorage.setItem("userRole", data.role);
-            sessionStorage.setItem("userName", data.name);
+            sessionStorage.setItem("userRole", role);
+            sessionStorage.setItem("userName", name);
           }
 
-          if (data.role !== "agent") {
+          // ✅ Check if agent
+          if (role !== "agent") {
             msg.innerText = "You are not an agent!";
             return;
           }
@@ -113,13 +119,14 @@
         }
       }
 
-      // Auto-login if token exists
+      // ✅ Auto-login if token exists
       window.onload = () => {
         const token =
           localStorage.getItem("token") || sessionStorage.getItem("token");
         const role =
           localStorage.getItem("userRole") ||
           sessionStorage.getItem("userRole");
+
         if (token && role === "agent") {
           window.location.href = "number_selector_updated.html";
         }
@@ -127,3 +134,4 @@
     </script>
   </body>
 </html>
+"
