@@ -90,26 +90,30 @@
             return;
           }
 
-          // ✅ Save login info
-          if (remember) {
-            localStorage.setItem("token", data.token);
-            localStorage.setItem("userRole", data.role);
-            localStorage.setItem("userName", data.name);
-          } else {
-            sessionStorage.setItem("token", data.token);
-            sessionStorage.setItem("userRole", data.role);
-            sessionStorage.setItem("userName", data.name);
-          }
+         // ✅ Extract role safely
+const role = data.user?.role;
+const name = data.user?.name || "User";
 
-          // ✅ Redirect logic
-          if (data.role === "owner") {
-            window.location.href = "owner_dashboard.html";
-          } else if (data.role === "agent") {
-            // if agent logs in here → go to agent_admin.html (the management dashboard)
-            window.location.href = "agent_admin.html";
-          } else {
-            msg.innerText = "Unknown role. Access denied.";
-          }
+// ✅ Save login info
+if (remember) {
+  localStorage.setItem("token", data.token);
+  localStorage.setItem("userRole", role);
+  localStorage.setItem("userName", name);
+} else {
+  sessionStorage.setItem("token", data.token);
+  sessionStorage.setItem("userRole", role);
+  sessionStorage.setItem("userName", name);
+}
+
+// ✅ Redirect logic
+if (role === "owner") {
+  window.location.href = "owner_dashboard.html";
+} else if (role === "agent") {
+  window.location.href = "agent_admin.html";
+} else {
+  msg.innerText = "Unknown role. Access denied.";
+}
+
         } catch (err) {
           msg.innerText = "Network error. Please check connection.";
         }
