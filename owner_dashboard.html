@@ -253,22 +253,19 @@
         tbody.innerHTML = "";
         agents.forEach((a) => {
           const tr = document.createElement("tr");
-          tr.innerHTML = `
-                  <td>${a.Id}</td>
-                  <td>${a.Name || "-"}</td>
-                  <td>${a.Phone}</td>
-                  <td>${a.IsActive ? "✅ Active" : "⛔ Blocked"}</td>
-                  <td>
-                    <button class="${
-                      a.IsActive ? "block" : "unblock"
-                    }" onclick="toggleAgent(${a.Id})">
-                      ${a.IsActive ? "Block" : "Unblock"}
-                    </button>
-                    <button class="delete" onclick="deleteAgent(${
-                      a.Id
-                    })">Delete</button>
-                  </td>
-                `;
+         tr.innerHTML = `
+  <td>${a.id}</td>
+  <td>${a.name || "-"}</td>
+  <td>${a.phone}</td>
+  <td>${a.isactive ? "✅ Active" : "⛔ Blocked"}</td>
+  <td>
+    <button class="${a.isactive ? "block" : "unblock"}" onclick="toggleAgent(${a.id})">
+      ${a.isactive ? "Block" : "Unblock"}
+    </button>
+    <button class="delete" onclick="deleteAgent(${a.id})">Delete</button>
+  </td>
+`;
+
           tbody.appendChild(tr);
         });
       }
