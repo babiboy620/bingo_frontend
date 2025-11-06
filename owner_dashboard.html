@@ -1,423 +1,337 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Owner Dashboard — Bingo House</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        background: #0f1724;
-        color: #e6eef8;
-        margin: 0;
-        padding: 20px;
-      }
-      h1 {
-        text-align: center;
-        color: #fbbf24;
-      }
-      h2 {
-        color: #fbbf24;
-      }
-      .section {
-        background: #1e293b;
-        padding: 15px;
-        border-radius: 10px;
-        margin-bottom: 20px;
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-      }
-      th,
-      td {
-        padding: 8px;
-        border: 1px solid #334155;
-        text-align: center;
-      }
-      th {
-        background: #1e293b;
-        color: #fbbf24;
-      }
-      tr:nth-child(even) {
-        background: #1a2233;
-      }
-      input {
-        padding: 6px 10px;
-        margin: 6px;
-        border-radius: 6px;
-        border: 1px solid #334155;
-        background: #0b1220;
-        color: #e6eef8;
-      }
-      button {
-        padding: 6px 10px;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-weight: bold;
-        margin: 3px;
-      }
-      .createBtn {
-        background: #f59e0b;
-        color: #111;
-      }
-      .block {
-        background: #ef4444;
-        color: white;
-      }
-      .unblock {
-        background: #10b981;
-        color: white;
-      }
-      .delete {
-        background: #991b1b;
-        color: white;
-      }
-      .summary {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 15px;
-        background: #1e293b;
-        padding: 15px;
-        border-radius: 10px;
-      }
-      .summary div {
-        background: #0b1220;
-        padding: 10px 15px;
-        border-radius: 8px;
-        color: #fbbf24;
-        font-weight: bold;
-        flex: 1 1 200px;
-      }
-    </style>
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <title>Owner Dashboard — Bingo House</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f1724;
+      color: #e6eef8;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #fbbf24;
+    }
+    h2 {
+      color: #fbbf24;
+    }
+    .section {
+      background: #1e293b;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      padding: 8px;
+      border: 1px solid #334155;
+      text-align: center;
+    }
+    th {
+      background: #1e293b;
+      color: #fbbf24;
+    }
+    tr:nth-child(even) {
+      background: #1a2233;
+    }
+    input {
+      padding: 6px 10px;
+      margin: 6px;
+      border-radius: 6px;
+      border: 1px solid #334155;
+      background: #0b1220;
+      color: #e6eef8;
+    }
+    button {
+      padding: 6px 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      margin: 3px;
+    }
+    .createBtn {
+      background: #f59e0b;
+      color: #111;
+    }
+    .block {
+      background: #ef4444;
+      color: white;
+    }
+    .unblock {
+      background: #10b981;
+      color: white;
+    }
+    .delete {
+      background: #991b1b;
+      color: white;
+    }
+    .summary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      background: #1e293b;
+      padding: 15px;
+      border-radius: 10px;
+    }
+    .summary div {
+      background: #0b1220;
+      padding: 10px 15px;
+      border-radius: 8px;
+      color: #fbbf24;
+      font-weight: bold;
+      flex: 1 1 200px;
+    }
+  </style>
+</head>
 
-  <body>
-    <h1>🏠 Owner Dashboard — Bingo House</h1>
-    <button
-      onclick="localStorage.clear(); sessionStorage.clear(); location.href='index.html';"
-      style="
-        background: #ef4444;
-        color: #fff;
-        border: none;
-        padding: 6px 10px;
-        border-radius: 6px;
-        float: right;
-      "
-    >
-      Logout
-    </button>
-    <!-- Create new agent -->
-    <div class="section">
-      <h2>➕ Create New Agent</h2>
-      <form id="createAgentForm">
-        <input type="text" id="agentName" placeholder="Name" required />
-        <input type="text" id="agentPhone" placeholder="Phone" required />
-        <input
-          type="password"
-          id="agentPassword"
-          placeholder="Password"
-          required
-        />
-        <button type="submit" class="createBtn">Create Agent</button>
-      </form>
-    </div>
+<body>
+  <h1>🏠 Owner Dashboard — Bingo House</h1>
+  <button
+    onclick="localStorage.clear(); sessionStorage.clear(); location.href='index.html';"
+    style="
+      background: #ef4444;
+      color: #fff;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      float: right;
+    "
+  >
+    Logout
+  </button>
 
-    <!-- Agents -->
-    <div class="section">
-      <h2>👥 Agents</h2>
-      <table id="agentsTable">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td colspan="5">Loading agents...</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <!-- Create new agent -->
+  <div class="section">
+    <h2>➕ Create New Agent</h2>
+    <form id="createAgentForm">
+      <input type="text" id="agentName" placeholder="Name" required />
+      <input type="text" id="agentPhone" placeholder="Phone" required />
+      <input type="password" id="agentPassword" placeholder="Password" required />
+      <button type="submit" class="createBtn">Create Agent</button>
+    </form>
+  </div>
 
-    <!-- Games -->
-    <div class="section">
-      <h2>🎮 All Games</h2>
-      <table id="gamesTable">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Agent</th>
-            <th>Players</th>
-            <th>Pot</th>
-            <th>Winner Money</th>
-            <th>Profit</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td colspan="7">Loading games...</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <!-- Agents -->
+  <div class="section">
+    <h2>👥 Agents</h2>
+    <table id="agentsTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="5">Loading agents...</td></tr>
+      </tbody>
+    </table>
+  </div>
 
-    <!-- Summary -->
-    <div class="summary" id="summaryBox">
-      <div>Total Games: 0</div>
-      <div>Total Players: 0</div>
-      <div>Total Pot: 0 birr</div>
-      <div>Total Winner Money: 0 birr</div>
-      <div>Total Profit: 0 birr</div>
-    </div>
-    <button id="downloadPDF">📄 Download PDF Report</button>
+  <!-- Games -->
+  <div class="section">
+    <h2>🎮 All Games</h2>
+    <table id="gamesTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Agent</th>
+          <th>Players</th>
+          <th>Pot</th>
+          <th>Winner Money</th>
+          <th>Profit</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="7">Loading games...</td></tr>
+      </tbody>
+    </table>
+  </div>
 
-    <script>
-      document.getElementById("downloadPDF").onclick = () => {
-        const token = localStorage.getItem("token");
-        fetch("https://bingo-server-ndkj.onrender.com/api/reports/owner", {
-          headers: { Authorization: "Bearer " + token },
-        })
-          .then((res) => res.blob())
-          .then((blob) => {
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "owner_report.pdf";
-            a.click();
-          })
-          .catch((err) => alert("Download failed: " + err.message));
-      };
-    </script>
+  <!-- Summary -->
+  <div class="summary" id="summaryBox">
+    <div>Total Games: 0</div>
+    <div>Total Players: 0</div>
+    <div>Total Pot: 0 birr</div>
+    <div>Total Winner Money: 0 birr</div>
+    <div>Total Profit: 0 birr</div>
+  </div>
 
-    <script>
-      const API_BASE = "https://bingo-server-ndkj.onrender.com";
+  <button id="downloadPDF">📄 Download PDF Report</button>
 
-      function getStorageValue(key) {
-        return localStorage.getItem(key) || sessionStorage.getItem(key);
-      }
+  <script>
+    const API_BASE = "https://bingo-server-ndkj.onrender.com";
 
-      const token = getStorageValue("token");
-      const role = getStorageValue("userRole");
+    function getStorageValue(key) {
+      return localStorage.getItem(key) || sessionStorage.getItem(key);
+    }
 
-      if (!token || role !== "owner") {
-        setTimeout(() => {
-          const tokenCheck = getStorageValue("token");
-          const roleCheck = getStorageValue("userRole");
-          if (!tokenCheck || roleCheck !== "owner") {
-            alert("Access denied — owners only!");
-            window.location.href = "admin_login.html";
-          }
-        }, 300);
-      }
+    const token = getStorageValue("token");
+    const role = getStorageValue("userRole");
 
-      // Create agent
-      document.getElementById("createAgentForm").onsubmit = async (e) => {
-        e.preventDefault();
-        const name = document.getElementById("agentName").value.trim();
-        const phone = document.getElementById("agentPhone").value.trim();
-        const password = document.getElementById("agentPassword").value.trim();
-        if (!phone || !password) return alert("Fill all fields!");
-
-        const res = await fetch(`${API_BASE}/api/agents/create`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + token,
-          },
-          body: JSON.stringify({ name, phone, password }),
-        });
-        const data = await res.json();
-        if (data.success) {
-          alert("✅ Agent created successfully!");
-          loadAgents();
-          e.target.reset();
-        } else {
-          alert("❌ " + (data.error || "Failed to create agent"));
+    if (!token || role !== "owner") {
+      setTimeout(() => {
+        const tokenCheck = getStorageValue("token");
+        const roleCheck = getStorageValue("userRole");
+        if (!tokenCheck || roleCheck !== "owner") {
+          alert("Access denied — owners only!");
+          window.location.href = "admin_login.html";
         }
-      };
+      }, 300);
+    }
 
-      // Load agents
-      async function loadAgents() {
-        const res = await fetch(`${API_BASE}/api/agents`, {
-          headers: { Authorization: "Bearer " + token },
-        });
-        const agents = await res.json();
-        const tbody = document.querySelector("#agentsTable tbody");
-        tbody.innerHTML = "";
-        agents.forEach((a) => {
-          const tr = document.createElement("tr");
-         tr.innerHTML = `
-  <td>${a.id}</td>
-  <td>${a.name || "-"}</td>
-  <td>${a.phone}</td>
-  <td>${a.isactive ? "✅ Active" : "⛔ Blocked"}</td>
-  <td>
-    <button class="${a.isactive ? "block" : "unblock"}" onclick="toggleAgent(${a.id})">
-      ${a.isactive ? "Block" : "Unblock"}
-    </button>
-    <button class="delete" onclick="deleteAgent(${a.id})">Delete</button>
-  </td>
-`;
+    // ✅ Create Agent
+    document.getElementById("createAgentForm").onsubmit = async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("agentName").value.trim();
+      const phone = document.getElementById("agentPhone").value.trim();
+      const password = document.getElementById("agentPassword").value.trim();
 
-          tbody.appendChild(tr);
-        });
-      }
+      if (!phone || !password) return alert("Fill all fields!");
 
-      // Toggle agent status
-      async function toggleAgent(id) {
-        if (!confirm("Change agent status?")) return;
-        await fetch(`${API_BASE}/api/agents/${id}/toggle`, {
-          method: "POST",
-          headers: { Authorization: "Bearer " + token },
-        });
+      const res = await fetch(`${API_BASE}/api/agents/create`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+        body: JSON.stringify({ name, phone, password }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert("✅ Agent created successfully!");
         loadAgents();
+        e.target.reset();
+      } else {
+        alert("❌ " + (data.error || "Failed to create agent"));
       }
+    };
 
-      // Delete agent
-      async function deleteAgent(id) {
-        if (!confirm("Are you sure you want to delete this agent?")) return;
-        const res = await fetch(`${API_BASE}/api/agents/${id}`, {
-          method: "DELETE",
-          headers: { Authorization: "Bearer " + token },
-        });
-        if (res.ok) {
-          alert("Agent deleted.");
-          loadAgents();
-        } else {
-          alert("Failed to delete agent.");
-        }
+    // ✅ Load Agents
+    async function loadAgents() {
+      const res = await fetch(`${API_BASE}/api/agents`, {
+        headers: { Authorization: "Bearer " + token },
+      });
+      const agents = await res.json();
+      const tbody = document.querySelector("#agentsTable tbody");
+      tbody.innerHTML = "";
+
+      agents.forEach((a) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${a.id}</td>
+          <td>${a.name || "-"}</td>
+          <td>${a.phone}</td>
+          <td>${a.isactive ? "✅ Active" : "⛔ Blocked"}</td>
+          <td>
+            <button class="${a.isactive ? "block" : "unblock"}" onclick="toggleAgent(${a.id})">
+              ${a.isactive ? "Block" : "Unblock"}
+            </button>
+            <button class="delete" onclick="deleteAgent(${a.id})">Delete</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // ✅ Toggle Agent Status
+    async function toggleAgent(id) {
+      if (!confirm("Change agent status?")) return;
+      await fetch(`${API_BASE}/api/agents/${id}/toggle`, {
+        method: "POST",
+        headers: { Authorization: "Bearer " + token },
+      });
+      loadAgents();
+    }
+
+    // ✅ Delete Agent
+    async function deleteAgent(id) {
+      if (!confirm("Are you sure you want to delete this agent?")) return;
+      const res = await fetch(`${API_BASE}/api/agents/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: "Bearer " + token },
+      });
+      if (res.ok) {
+        alert("Agent deleted.");
+        loadAgents();
+      } else {
+        alert("Failed to delete agent.");
       }
+    }
 
-      // Load all games
-      async function loadGames() {
-        const res = await fetch(`${API_BASE}/api/games`, {
-          headers: { Authorization: "Bearer " + token },
-        });
-        const data = await res.json();
-        const games = data.games || data || [];
-        const tbody = document.querySelector("#gamesTable tbody");
-        tbody.innerHTML = "";
-        let totalGames = 0,
+    // ✅ Load All Games
+    async function loadGames() {
+      const res = await fetch(`${API_BASE}/api/games`, {
+        headers: { Authorization: "Bearer " + token },
+      });
+      const data = await res.json();
+      const games = data.games || data || [];
+      const tbody = document.querySelector("#gamesTable tbody");
+      tbody.innerHTML = "";
+      let totalGames = 0,
           totalPlayers = 0,
           totalPot = 0,
           totalWinners = 0,
           totalProfit = 0;
 
-        games.forEach((g) => {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-                  <td>${g.Id}</td>
-                  <td>${g.AgentId}</td>
-                  <td>${g.Players}</td>
-                  <td>${g.Pot} birr</td>
-                  <td>${g.WinnerMoney} birr</td>
-                  <td>${g.Profit} birr</td>
-                  <td>${new Date(g.Date).toLocaleDateString()}</td>
-                `;
-          tbody.appendChild(tr);
+      games.forEach((g) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${g.id}</td>
+          <td>${g.agentid}</td>
+          <td>${g.players}</td>
+          <td>${g.pot} birr</td>
+          <td>${g.winnermoney} birr</td>
+          <td>${g.profit} birr</td>
+          <td>${new Date(g.date).toLocaleDateString()}</td>
+        `;
+        tbody.appendChild(tr);
 
-          totalGames++;
-          totalPlayers += g.Players;
-          totalPot += Number(g.Pot);
-          totalWinners += Number(g.WinnerMoney);
-          totalProfit += Number(g.Profit);
-        });
+        totalGames++;
+        totalPlayers += g.players;
+        totalPot += Number(g.pot);
+        totalWinners += Number(g.winnermoney);
+        totalProfit += Number(g.profit);
+      });
 
-        document.getElementById("summaryBox").innerHTML = `
-                <div>Total Games: ${totalGames}</div>
-                <div>Total Players: ${totalPlayers}</div>
-                <div>Total Pot: ${totalPot} birr</div>
-                <div>Total Winner Money: ${totalWinners} birr</div>
-                <div>Total Profit: ${totalProfit} birr</div>
-              `;
-      }
-
-      loadAgents();
-      loadGames();
-    </script>
-    <script>
-async function loadGames() {
-  try {
-    const res = await fetch(`${API_BASE}/api/games`, {
-      headers: { Authorization: "Bearer " + token },
-    });
-    const data = await res.json();
-    const games = data.games || data || [];
-    const tbody = document.querySelector("#gamesTable tbody");
-    tbody.innerHTML = "";
-
-    // Group games by agent
-    const agentsMap = {};
-    games.forEach((g) => {
-      if (!agentsMap[g.AgentId]) {
-        agentsMap[g.AgentId] = {
-          totalGames: 0,
-          totalPlayers: 0,
-          totalPot: 0,
-          totalWinner: 0,
-          totalProfit: 0,
-        };
-      }
-      agentsMap[g.AgentId].totalGames++;
-      agentsMap[g.AgentId].totalPlayers += g.Players;
-      agentsMap[g.AgentId].totalPot += Number(g.Pot);
-      agentsMap[g.AgentId].totalWinner += Number(g.WinnerMoney);
-      agentsMap[g.AgentId].totalProfit += Number(g.Profit);
-    });
-
-    // Render table rows per agent
-    for (const agentId in agentsMap) {
-      const a = agentsMap[agentId];
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${a.totalGames}</td>
-        <td>${agentId}</td>
-        <td>${a.totalPlayers}</td>
-        <td>${a.totalPot} birr</td>
-        <td>${a.totalWinner} birr</td>
-        <td>${a.totalProfit} birr</td>
-        <td>-</td>
+      document.getElementById("summaryBox").innerHTML = `
+        <div>Total Games: ${totalGames}</div>
+        <div>Total Players: ${totalPlayers}</div>
+        <div>Total Pot: ${totalPot} birr</div>
+        <div>Total Winner Money: ${totalWinners} birr</div>
+        <div>Total Profit: ${totalProfit} birr</div>
       `;
-      tbody.appendChild(tr);
     }
 
-    // Update summary totals
-    let totalGames = 0,
-      totalPlayers = 0,
-      totalPot = 0,
-      totalWinners = 0,
-      totalProfit = 0;
-    for (const agentId in agentsMap) {
-      const a = agentsMap[agentId];
-      totalGames += a.totalGames;
-      totalPlayers += a.totalPlayers;
-      totalPot += a.totalPot;
-      totalWinners += a.totalWinner;
-      totalProfit += a.totalProfit;
-    }
+    document.getElementById("downloadPDF").onclick = () => {
+      fetch(`${API_BASE}/api/reports/owner`, {
+        headers: { Authorization: "Bearer " + token },
+      })
+        .then((res) => res.blob())
+        .then((blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "owner_report.pdf";
+          a.click();
+        })
+        .catch((err) => alert("Download failed: " + err.message));
+    };
 
-    document.getElementById("summaryBox").innerHTML = `
-      <div>Total Games: ${totalGames}</div>
-      <div>Total Players: ${totalPlayers}</div>
-      <div>Total Pot: ${totalPot} birr</div>
-      <div>Total Winner Money: ${totalWinners} birr</div>
-      <div>Total Profit: ${totalProfit} birr</div>
-    `;
-  } catch (err) {
-    console.error("Error loading games:", err);
-  }
-}
-
-loadGames();
-</script>
-
-    </script>
-  </body>
+    // Initialize data
+    loadAgents();
+    loadGames();
+  </script>
+</body>
 </html>
