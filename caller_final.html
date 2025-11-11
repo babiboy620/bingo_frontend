@@ -849,7 +849,8 @@
           }
 
           // cartelas
-          const rc = await fetch(`${API_BASE}/api/games/${GAME_ID}/cartelas`, {
+         const rc = await fetch(`${API_BASE}/api/cartelas`, {
+
             headers: { Authorization: "Bearer " + token },
           });
           const jc = await rc.json();
