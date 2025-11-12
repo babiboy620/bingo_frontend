@@ -303,9 +303,14 @@
           });
           const data = await res.json();
           if (!data.success) return alert(data.error || "Failed to save game");
-          const gameId = data.gameId || data.id || data.insertId;
-          window.location.href =
-            "caller_final.html?gameId=" + encodeURIComponent(gameId);
+         const gameId = data.game?.id;
+if (!gameId) {
+  console.error("Game ID not returned from backend:", data);
+  return alert("Game created, but missing ID from server!");
+}
+
+window.location.href = `caller_final.html?gameId=${gameId}`;
+
         } catch (err) {
           console.error(err);
           alert("Network error while saving game");
